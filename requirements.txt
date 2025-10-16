@@ -1,0 +1,4 @@
+dotenv==0.9.9
+lxml==6.0.2
+psycopg2==2.9.10
+SQLAlchemy==2.0.43
