@@ -8,19 +8,20 @@ SELECT DISTINCT ON (d.id)
     d.lastname                                 AS "LastName",
     d.firstname                                AS "FirstName",
     d.patrname                                 AS "MiddleName",
-    d.birthday                                 AS "BirthDate",
+    to_char(d.birthday,
+            'dd.mm.yyyy 00:00:00')             AS "BirthDate",
     d.sex                                      AS "Gender",
     d.deleted                                  AS "IsDeleted",
     to_char(d."createDateTime",
-            'yyyy-mm-ddThh:mm:ss.ms')          AS "CreateDate",
+            'yyyy-mm-ddThh24:mi:ss.US')        AS "CreateDate",
     to_char(d."modifyDateTime",
-            'yyyy-mm-ddThh:mm:ss.ms')          AS "LastModifiedDate",
+            'yyyy-mm-ddThh24:mi:ss.US')        AS "LastModifiedDate",
     d."createUserid"                           AS "CreateUserId",
     de.organisation                            AS "JobInfo",
     de.post                                    AS "JobPosition",
     dc.contact                                 AS "PhoneMob",
-    '27761'                                    AS "OrgId",
-    false                                      AS "IsMessageAgree",
+    '770500'                                   AS "OrgId",
+    'true'                                     AS "IsMessageAgree",
     CONCAT_WS(', ', da.locality, da.street,
               da.house, da.flat)               AS "PlaneAddress",
     dd.type                                    AS "DocType",
@@ -45,24 +46,26 @@ SELECT DISTINCT ON (d.id)
     d.lastname                              AS "LastName",
     d.firstname                             AS "FirstName",
     d.patrname                              AS "MiddleName",
-    d.birthday                              AS "BirthDate",
+    to_char(d.birthday,
+        'dd.mm.yyyy 00:00:00')              AS "BirthDate",
     (d.birthday IS NULL)                    AS "BirthDateIsUndef",
     d.sex                                   AS "Gender",
     d.deleted                               AS "IsDeleted",
     d."SNILS"                               AS "Snils",
     to_char(d."createDateTime",
-            'yyyy-mm-ddThh:mm:ss.ms')       AS "CreateDate",
+            'yyyy-mm-ddThh24:mi:ss.US')     AS "CreateDate",
     to_char(d."modifyDateTime",
-            'yyyy-mm-ddThh:mm:ss.ms')       AS "LastModifiedDate",
+            'yyyy-mm-ddThh24:mi:ss.US')     AS "LastModifiedDate",
     d."createUserid"                        AS "CreateUserId",
     de.organisation                         AS "JobInfo",
     dc.contact                              AS "PhoneMob",
-    '27761'                                 AS "OrgId",
-    'false'                                 AS "IsMessageAgree",
+    '770500'                                AS "OrgId",
+    'true'                                  AS "IsMessageAgree",
     dd.type                                 AS "DocType",
     dd.Number                               AS "Number",
     dd.serial                               AS "Serie",
-    dd."startDate"                          AS "IssueDate",
+    to_char(dd."startDate",
+            'dd.mm.yyyy 00:00:00')          AS "IssueDate",
     'false'                                 AS "IsActive",
     'false'                                 AS "IsAgree",
     dn.id                                   AS note_id
@@ -110,15 +113,15 @@ ORDER BY 1 DESC;
 """
 
 notes_stmt = """ 
-SELECT d.id                                AS "DonorId",
-       1                                   AS "NoteType",
+SELECT d.id                                  AS "DonorId",
+       1                                     AS "NoteType",
        to_char(dn."modifyDateTime",
-               'yyyy-mm-ddThh:mm:ss.ms')   AS "CreateDate",
-       dn."createUserid"                   AS "UserId",
-       'false'                             AS "IsFixed",
-       0                                   AS "AssignedTo",
-       dn.deleted                          AS "IsDeleted",
-       dn.note                             AS "Text"
+               'yyyy-mm-ddThh24:mi:ss.US')   AS "CreateDate",
+       dn."createUserid"                     AS "UserId",
+       'false'                               AS "IsFixed",
+       0                                     AS "AssignedTo",
+       dn.deleted                            AS "IsDeleted",
+       dn.note                               AS "Text"
 FROM donor d
 INNER JOIN donor_note dn on d.id = dn.donor_id
       AND NOT dn.deleted
@@ -193,8 +196,9 @@ docs_stmt = """
 SELECT DISTINCT ON (V.id)
     v.id                                        AS "UnId",
     v."createUserid"                            AS "UserId",
-    v."createDateTime"                          AS "CreateDate",
-    '27761'                                     AS "OrgId",
+    to_char(v."createDateTime",
+            'yyyy-mm-ddThh24:mi:ss.US')         AS "CreateDate",
+    '770500'                                    AS "OrgId",
     donor_id                                    AS "DonorId",
     v."setDate"                                 AS "ExamDate",
     v.deleted                                   AS "IsDeleted",
@@ -228,17 +232,17 @@ WHERE v.id = %s AND NOT v.deleted;
 
 prelab_stmt = """
 SELECT
-    lab.status_id                       AS "HematologyResultType",
-    '27761'                             AS "OrgId",
-    v.donor_id                          AS "DonorId",
-    lab.deleted                         AS "IsDeleted",
+    lab.status_id                         AS "HematologyResultType",
+    '770500'                              AS "OrgId",
+    v.donor_id                            AS "DonorId",
+    lab.deleted                           AS "IsDeleted",
     to_char(lab."createDateTime",
-            'yyyy-mm-ddThh:mm:ss.ms')   AS "CreateDate",
-    lab."setDate"                       AS "ExamDate",
-    lab.id                              AS "UnId",
-    lab."createUserid"                  AS "UserId",
-    lab."endDate"                       AS "ExamEndTime",
-    'true'                              AS "DeferralId"
+            'yyyy-mm-ddThh24:mi:ss.US')   AS "CreateDate",
+    lab."setDate"                         AS "ExamDate",
+    lab.id                                AS "UnId",
+    lab."createUserid"                    AS "UserId",
+    lab."endDate"                         AS "ExamEndTime",
+    'true'                                AS "DeferralId"
 FROM lab
 INNER JOIN visit v ON lab.visit_id = v.id AND NOT v.deleted
 WHERE DATE(lab."setDate") >= DATE(NOW() - INTERVAL '1 DAY')
@@ -264,12 +268,11 @@ SELECT lab.donation_id,
        lab.status_id                                            AS "ResultStatus",
        dn.type_id                                               AS "DonationTypeId",
        '100000012'                                              AS "DepartmentId",
-       v.donor_id                                               AS "DonorId",
-       '27761'                                                  AS "OrgId",
+       v.donor_id                                               AS "UnId",
+       '770500'                                                 AS "OrgId",
        to_char(lab."createDateTime",
-               'yyyy-mm-ddThh:mm:ss.ms')                        AS "CreateDate",
+               'yyyy-mm-ddThh24:mi:ss.US')                      AS "CreateDate",
        dn."setDate"                                             AS "DonationDate",
-       lab.id                                                   AS "UnId",
        substring(concat(lab.prefix, lab.number, lab.suffix), 4) AS "Barcode",
        lab.deleted                                              AS "IsDeleted",
        lab."createUserid"                                       AS "CreateUserId",
@@ -277,7 +280,7 @@ SELECT lab.donation_id,
        anticoagulant.value                                      AS "ConsVol",
        component_excluding_anticoag.value                       AS "ConsBloodVol",
        to_char(dn."modifyDateTime",
-               'yyyy-mm-ddThh:mm:ss.ms')                        AS "LastModifiedDate"
+               'yyyy-mm-ddThh24:mi:ss.US')                      AS "LastModifiedDate"
 FROM lab
          JOIN donation dn on lab.donation_id = dn.id
          JOIN visit v ON dn.visit_id = v.id
@@ -302,7 +305,7 @@ WHERE DATE(lab."setDate") >= DATE(NOW() - INTERVAL '1 DAY');
 donations_tests_stmt = """
 SELECT
     to_char(lp."createDateTime",
-            'yyyy-mm-ddThh:mm:ss.ms')       AS "CreateDate",
+            'yyyy-mm-ddThh24:mi:ss.US')     AS "CreateDate",
     lab."createUserid"                      AS "UserId",
     lpt.aist_id                             AS "TestTypeId",
     lp.value                                AS "Value"
@@ -321,10 +324,10 @@ exemption_stmt = """
 SELECT
     db.id                                   AS "UnId",
     db.donor_id                             AS "DonorId",
-    '27761'                                 AS "OrgId",
+    '770500'                                AS "OrgId",
     db.reason                               AS "DefType",
     to_char(db."createDateTime",
-            'yyyy-mm-ddThh:mm:ss.ms')       AS "CreateDate",
+            'yyyy-mm-ddThh24:mi:ss.US')     AS "CreateDate",
     db."createUserid"                       AS "CreateUserId",
     db."startDate"                          AS "StartDate",
     db."endDate"                            AS "StopDate",

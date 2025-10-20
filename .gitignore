@@ -207,3 +207,4 @@ marimo/_lsp/
 __marimo__/
 примеры/
 database/config.env
+*.xml

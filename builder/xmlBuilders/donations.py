@@ -25,7 +25,7 @@ class Donations(XmlSaver):
             "ResultStatus": record.ResultStatus,
             "DonationTypeId": record.DonationTypeId,
             "DepartmentId": record.DepartmentId,
-            "DonorId": record.DonorId,
+            "DonorId": record.UnId,
             "OrgId": record.OrgId,
             "CreateDate": record.CreateDate,
             "DonationDate": record.DonationDate,
