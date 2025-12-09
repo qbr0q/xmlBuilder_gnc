@@ -1,18 +1,16 @@
-from builder.base import XmlSaver
+from builder.base import XmlBase
 from builder.NS import root_ns, ns, xsi_type
 from database.sql import docs_stmt, docs_tests_stmt
 from database.utils import get_records
 
 
-class DocsExam(XmlSaver):
+class DocsExam(XmlBase):
     """
     Врачебный осмотр
     """
     def __init__(self):
-        self.file_name = "doctors_examination.xml"
-        self.xml_name = "Врачебный осмотр"
         self.visits_records = None
-        self.xml = None
+        super().__init__(file_name="doctors_examination.xml", xml_name="Врачебный осмотр")
 
     def load_data(self):
         records = get_records(docs_stmt)
@@ -62,7 +60,3 @@ class DocsExam(XmlSaver):
             )
         )
         return xml
-
-    def build(self):
-        self.xml = self._build_xml()
-        self.save(self.file_name, self.xml)

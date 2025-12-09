@@ -1,12 +1,24 @@
-from sqlalchemy import create_engine
-from dotenv import load_dotenv
-import os
+import sys
+import sqlalchemy
 
+from settings import (DB_USER, DB_PASSWORD, DB_HOST,
+                      DB_PORT, DB_DATABASE)
 
-load_dotenv("database/config.env")
 
 DATABASE_URL = "postgresql://{user}:{password}@{host}:{port}/{database}".format(
-    user=os.getenv("user"), password=os.getenv("password"), host=os.getenv("host"),
-    port=os.getenv("port"), database=os.getenv("database")
+    user=DB_USER, password=DB_PASSWORD, host=DB_HOST,
+    port=DB_PORT, database=DB_DATABASE
 )
-engine = create_engine(DATABASE_URL)
+
+try:
+    engine = sqlalchemy.create_engine(
+        DATABASE_URL,
+        connect_args={"connect_timeout": 5}
+    )
+    engine.connect()
+except sqlalchemy.exc.OperationalError as e:
+    print(f'Ошибка подлкючения к бд: {e}')
+    sys.exit(1)
+except Exception as e:
+    print(f'Неизвестная ошибка: {e}')
+    sys.exit(1)

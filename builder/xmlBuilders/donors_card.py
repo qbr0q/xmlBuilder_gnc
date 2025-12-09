@@ -1,18 +1,16 @@
-from builder.base import XmlSaver
+from builder.base import XmlBase
 from builder.NS import root_ns, ns
 from database.sql import donors_card_stmt, blood_param_stmt
 from database.utils import get_records, get_record
 
 
-class DonorsCard(XmlSaver):
+class DonorsCard(XmlBase):
     """
     Карта донора
     """
     def __init__(self):
-        self.file_name = "donors_card.xml"
-        self.xml_name = "Карта донора"
         self.person_card_records = None
-        self.xml = None
+        super().__init__(file_name="donors_card.xml", xml_name="Карта донора")
 
     def load_data(self):
         records = get_records(donors_card_stmt)
@@ -78,7 +76,3 @@ class DonorsCard(XmlSaver):
             )
         )
         return xml
-
-    def build(self):
-        self.xml = self._build_xml()
-        self.save(self.file_name, self.xml)

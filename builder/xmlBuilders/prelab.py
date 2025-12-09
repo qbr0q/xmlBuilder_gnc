@@ -1,18 +1,16 @@
-from builder.base import XmlSaver
+from builder.base import XmlBase
 from builder.NS import root_ns, ns, xsi_type
 from database.sql import prelab_stmt, prelab_tests_stmt
 from database.utils import get_records
 
 
-class PreLab(XmlSaver):
+class PreLab(XmlBase):
     """
     Предлаб
     """
     def __init__(self):
-        self.file_name = "prelab.xml"
-        self.xml_name = "Предлаб"
         self.prelab_records = None
-        self.xml = None
+        super().__init__(file_name="prelab.xml", xml_name="Предлаб")
 
     def load_data(self):
         records = get_records(prelab_stmt)
@@ -67,7 +65,3 @@ class PreLab(XmlSaver):
             )
         )
         return xml
-
-    def build(self):
-        self.xml = self._build_xml()
-        self.save(self.file_name, self.xml)

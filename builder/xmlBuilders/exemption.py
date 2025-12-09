@@ -1,18 +1,16 @@
-from builder.base import XmlSaver
+from builder.base import XmlBase
 from builder.NS import root_ns, ns
 from database.sql import exemption_stmt
 from database.utils import get_records
 
 
-class Exemption(XmlSaver):
+class Exemption(XmlBase):
     """
     Отводы
     """
     def __init__(self):
-        self.file_name = "exemption.xml"
-        self.xml_name = "Отводы"
         self.exemption_records = None
-        self.xml = None
+        super().__init__(file_name="exemption.xml", xml_name="Отводы")
 
     def load_data(self):
         records = get_records(exemption_stmt)
@@ -72,7 +70,3 @@ class Exemption(XmlSaver):
             )
         )
         return xml
-
-    def build(self):
-        self.xml = self._build_xml()
-        self.save(self.file_name, self.xml)

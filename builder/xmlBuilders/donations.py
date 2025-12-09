@@ -1,19 +1,17 @@
-from builder.base import XmlSaver
+from builder.base import XmlBase
 from builder.NS import root_ns, ns
 from database.sql import donations_stmt, donations_tests_stmt
 from database.utils import get_records
 
 
-class Donations(XmlSaver):
+class Donations(XmlBase):
     """
     Донации
     """
     def __init__(self):
-        self.file_name = "donations.xml"
-        self.xml_name = "Донации"
         self.app_tests = ""
         self.donations_records = None
-        self.xml = None
+        super().__init__(file_name="donations.xml", xml_name="Донации")
 
     def load_data(self):
         records = get_records(donations_stmt)
@@ -90,7 +88,3 @@ class Donations(XmlSaver):
             )
         )
         return xml
-
-    def build(self):
-        self.xml = self._build_xml()
-        self.save(self.file_name, self.xml)
