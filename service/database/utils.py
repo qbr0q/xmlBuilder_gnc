@@ -1,6 +1,6 @@
 from sqlalchemy import text
 
-from database import engine
+from service.database import engine
 
 
 class NotEmptyRecord:

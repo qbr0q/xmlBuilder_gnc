@@ -1,7 +1,7 @@
-from builder.base import XmlBase
-from builder.NS import root_ns, ns
-from database.sql import donors_card_stmt, blood_param_stmt
-from database.utils import get_records, get_record
+from service.builder.base import XmlBase
+from service.builder.NS import root_ns, ns
+from service.database.sql import donors_card_stmt, blood_param_stmt
+from service.database.utils import get_records, get_record
 
 
 class DonorsCard(XmlBase):

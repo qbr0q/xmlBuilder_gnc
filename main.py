@@ -1,6 +1,5 @@
-from builder import XmlBuilder
+from service import run_service
 
 
 if __name__ == "__main__":
-    xml_builder = XmlBuilder()
-    xml_builder.build()
+    run_service()

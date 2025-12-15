@@ -2,6 +2,10 @@ import os
 from abc import ABC, abstractmethod
 from lxml import etree
 from datetime import datetime
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class XmlSaver:
@@ -62,4 +66,4 @@ class XmlBase(ABC, XmlSaver):
             xml = self._build_xml()
             self.save(self.file_name, xml)
         except Exception as e:
-            print(f'Ошибка формирования или сохранения с файлом "{self.xml_name}": {e}')
+            logger.error(f'Ошибка формирования или сохранения с документом "{self.xml_name}": {e}')

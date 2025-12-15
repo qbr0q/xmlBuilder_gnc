@@ -1,7 +1,7 @@
-from builder.base import XmlBase
-from builder.NS import root_ns, ns
-from database.sql import exemption_stmt
-from database.utils import get_records
+from service.builder.base import XmlBase
+from service.builder.NS import root_ns, ns
+from service.database.sql import exemption_stmt
+from service.database.utils import get_records
 
 
 class Exemption(XmlBase):
