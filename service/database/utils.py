@@ -41,18 +41,18 @@ class FormattedRecord:
         return {i[0]: PG_TYPES_MAP.get(i[1]) for i in field_descriptions}
 
 
-def get_records(stmt):
-    with engine.connect() as conn:
-        result_data = conn.execute(text(stmt))
+async def get_records(stmt):
+    async with engine.connect() as conn:
+        result_data = await conn.execute(text(stmt))
         field_descriptions = result_data.cursor.description
         result_raw = result_data.fetchall()
         result = [FormattedRecord(res, field_descriptions) for res in result_raw]
     return result
 
 
-def get_record(stmt):
-    with engine.connect() as conn:
-        result_data = conn.execute(text(stmt))
+async def get_record(stmt):
+    async with engine.connect() as conn:
+        result_data = await conn.execute(text(stmt))
         field_descriptions = result_data.cursor.description
         result_raw = result_data.fetchone()
         result = FormattedRecord(result_raw, field_descriptions)

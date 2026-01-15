@@ -12,8 +12,8 @@ class PreLab(XmlBase):
         self.prelab_records = None
         super().__init__(xml_name="Предлаб")
 
-    def load_data(self):
-        records = get_records(prelab_stmt)
+    async def load_data(self):
+        records = await get_records(prelab_stmt)
         self.prelab_records = records
 
     @staticmethod
@@ -31,8 +31,8 @@ class PreLab(XmlBase):
         return prelab_attrib
 
     @staticmethod
-    def _create_results_component(un_id):
-        prelab_tests = get_records(prelab_tests_stmt % un_id)
+    async def _create_results_component(un_id):
+        prelab_tests = await get_records(prelab_tests_stmt % un_id)
 
         for record in prelab_tests:
             yield ns.Result(
@@ -41,9 +41,10 @@ class PreLab(XmlBase):
                 Value=record.Value
             )
 
-    def _create_hem_exams(self):
+    async def _create_hem_exams(self):
         for record in self.prelab_records:
             prelab_attrib = self._create_prelab_attrib(record)
+            resulct_component = [rc async for rc in self._create_results_component(record.UnId)]
 
             yield ns.HemExam(
                 ns.ExamEndTime(
@@ -52,12 +53,14 @@ class PreLab(XmlBase):
                 ns.DeferralId(
                     {xsi_type: "true"}
                 ),
-                *self._create_results_component(record.UnId),
+                *resulct_component,
                 prelab_attrib
             )
 
-    def _build_xml(self):
+    async def _build_xml(self):
+        hem_exams = [h async for h in self._create_hem_exams()]
+
         xml = ns.HemExams(
-            *self._create_hem_exams()
+            *hem_exams
         )
         return xml

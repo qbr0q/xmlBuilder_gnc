@@ -14,8 +14,8 @@ class DonorsCard(XmlBase):
         self.address_records = None
         super().__init__(xml_name="Карта донора")
 
-    def load_data(self):
-        records = get_records(donors_card_stmt)
+    async def load_data(self):
+        records = await get_records(donors_card_stmt)
         self.person_card_records = records
 
     @staticmethod
@@ -48,11 +48,11 @@ class DonorsCard(XmlBase):
                 IsDeleted=note_record.IsDeleted
             )
 
-    def _create_person_cards(self):
+    async def _create_person_cards(self):
         for record in self.person_card_records:
             person_card_attrib = self._create_person_card_attrib(record)
-            address_record = get_record(address_stmt % record.UnId)
-            blood_record = get_record(blood_param_stmt % record.UnId)
+            address_record = await get_record(address_stmt % record.UnId)
+            blood_record = await get_record(blood_param_stmt % record.UnId)
 
             yield ns.PersonCard(
                 ns.Gender(
@@ -100,8 +100,10 @@ class DonorsCard(XmlBase):
                 person_card_attrib
             )
 
-    def _build_xml(self):
+    async def _build_xml(self):
+        person_cards = [p async for p in self._create_person_cards()]
+
         xml = ns.PersonCards(
-            *self._create_person_cards()
+            *person_cards
         )
         return xml

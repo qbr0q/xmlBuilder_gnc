@@ -13,8 +13,8 @@ class Donations(XmlBase):
         self.donations_records = None
         super().__init__(xml_name="Донации")
 
-    def load_data(self):
-        records = get_records(donations_stmt)
+    async def load_data(self):
+        records = await get_records(donations_stmt)
         self.donations_records = records
 
     @staticmethod
@@ -38,8 +38,8 @@ class Donations(XmlBase):
         type_info = (f'{record.TestTypeId}:{(record.Value != "-") + 1}' for record in records)
         self.app_tests = "|".join(type_info)
 
-    def _create_results_component(self, un_id):
-        prelab_tests = get_records(donations_tests_stmt % un_id)
+    async def _create_results_component(self, un_id):
+        prelab_tests = await get_records(donations_tests_stmt % un_id)
         self._get_test_type_info(prelab_tests)
 
         for record in prelab_tests:
@@ -49,9 +49,10 @@ class Donations(XmlBase):
                 Value=record.Value
             )
 
-    def _create_donation(self):
+    async def _create_donation(self):
         for record in self.donations_records:
             donation_attrib = self._create_donation_attrib(record)
+            results_component = [r async for r in self._create_results_component(record.DonationId)]
 
             yield ns.Donation(
                 ns.Volume(
@@ -72,12 +73,14 @@ class Donations(XmlBase):
                 ns.AppTests(
                     self.app_tests
                 ) if self.app_tests else {},
-                *self._create_results_component(record.DonationId),
+                *results_component,
                 donation_attrib
             )
 
-    def _build_xml(self):
+    async def _build_xml(self):
+        donations_list = [d async for d in self._create_donation()]
+
         xml = ns.Donations(
-            *self._create_donation()
+            *donations_list
         )
         return xml

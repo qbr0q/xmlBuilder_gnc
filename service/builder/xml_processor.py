@@ -12,8 +12,8 @@ class XmlManager:
         self.logger = XmlLogger()
         self.saver = XmlSaver()
 
-    def execute(self):
-        build_response = self.builder.build(
+    async def execute(self):
+        build_response = await self.builder.build(
             components_list=components
         )
         xml_content = build_response.content

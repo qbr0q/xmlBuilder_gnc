@@ -12,8 +12,8 @@ class DocsExam(XmlBase):
         self.visits_records = None
         super().__init__(xml_name="Врачебный осмотр")
 
-    def load_data(self):
-        records = get_records(docs_stmt)
+    async def load_data(self):
+        records = await get_records(docs_stmt)
         self.visits_records = records
 
     @staticmethod
@@ -30,8 +30,9 @@ class DocsExam(XmlBase):
         return med_exam_attrib
 
     @staticmethod
-    def _create_results_component(un_id):
-        docs_tests = get_records(docs_tests_stmt % un_id)
+    async def _create_results_component(un_id):
+        docs_tests = await get_records(docs_tests_stmt % un_id)
+
         for record in docs_tests:
             yield ns.Result(
                 ns.IsNorm(record.IsNorm) if record.IsNorm != '-' else {},
@@ -39,20 +40,23 @@ class DocsExam(XmlBase):
                 Value=record.Value
             )
 
-    def _create_med_exams(self):
+    async def _create_med_exams(self):
         for record in self.visits_records:
             med_exam_attrib = self._create_med_exam_attrib(record)
+            results_component = [rc async for rc in self._create_results_component(record.UnId)]
 
             yield ns.MedExam(
                 ns.DeferralId(
                     {xsi_type: "true"}
                 ),
-                *self._create_results_component(record.UnId),
+                *results_component,
                 med_exam_attrib
             )
 
-    def _build_xml(self):
+    async def _build_xml(self):
+        med_exams = [me async for me in self._create_med_exams()]
+
         xml = ns.MedExams(
-            *self._create_med_exams()
+            *med_exams
         )
         return xml

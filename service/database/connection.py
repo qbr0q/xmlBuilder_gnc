@@ -1,19 +1,20 @@
 import sys
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from settings import (DB_USER, DB_PASSWORD, DB_HOST,
                       DB_PORT, DB_DATABASE)
 
 
-DATABASE_URL = "postgresql://{user}:{password}@{host}:{port}/{database}".format(
+DATABASE_URL = "postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}".format(
     user=DB_USER, password=DB_PASSWORD, host=DB_HOST,
     port=DB_PORT, database=DB_DATABASE
 )
 
-engine = sqlalchemy.create_engine(
+engine = create_async_engine(
     DATABASE_URL,
-    connect_args={"connect_timeout": 5}
+    connect_args={"timeout": 5}
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

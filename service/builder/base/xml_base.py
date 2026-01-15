@@ -1,5 +1,6 @@
 import os
 import uuid
+import asyncio
 from abc import ABC, abstractmethod
 from lxml import etree
 from datetime import datetime
@@ -18,17 +19,17 @@ class XmlBase(ABC):
     def __init__(self, xml_name: str):
         self.xml_name = xml_name
 
-    def load_data(self):
+    async def load_data(self):
         pass
 
     @abstractmethod
     def _build_xml(self):
         pass
 
-    def build(self):
+    async def build(self):
         try:
-            self.load_data()
-            xml = self._build_xml()
+            await self.load_data()
+            xml = await self._build_xml()
             return sn(
                 status='ok',
                 content=xml
@@ -80,7 +81,7 @@ class XmlSaver:
     @staticmethod
     def get_file_name():
         now = datetime.now()
-        timestamp = now.strftime("%y%m%d%H%M%S") + now.strftime("%f")[:3]
+        timestamp = now.strftime("%Y%m%d%H%M%S")
         return f"{timestamp}.xml"
 
 
@@ -92,7 +93,8 @@ class XmlBuilder:
         self.log_messages = []
         self.request_id = self._get_request_id()
 
-    def build(self, components_list):
+    async def build(self, components_list):
+        tasks = []
 
         xml = root_ns.NodeToServerPackage(
             ns.NodeId(org_id),
@@ -100,20 +102,20 @@ class XmlBuilder:
         )
         for component in components_list:
             cmp_cls = component()
-            response = cmp_cls.build()
+            tasks.append(cmp_cls.build())
+
+        responses = await asyncio.gather(*tasks, return_exceptions=True)
+        for response in responses:
+            if isinstance(response, Exception):
+                self.log_messages.append(f"Критическая ошибка: {str(response)}")
+                continue
 
             if response.status == 'ok':
                 xml_content = response.content
                 if xml_content is not None and len(xml_content):
                     xml.append(xml_content)
             elif response.status == 'error':
-                self.log_messages.append(
-                    response.content
-                )
-            else:
-                self.log_messages.append(
-                    "Неизвестная ошибка"
-                )
+                self.log_messages.append(response.content)
 
         return sn(
             content=xml,

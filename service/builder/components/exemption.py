@@ -12,8 +12,8 @@ class Exemption(XmlBase):
         self.exemption_records = None
         super().__init__(xml_name="Отводы")
 
-    def load_data(self):
-        records = get_records(exemption_stmt)
+    async def load_data(self):
+        records = await get_records(exemption_stmt)
         self.exemption_records = records
 
     @staticmethod
@@ -28,7 +28,7 @@ class Exemption(XmlBase):
         }
         return deferral_attrib
 
-    def _create_deferral(self):
+    async def _create_deferral(self):
         for record in self.exemption_records:
             deferral_attrib = self._create_deferral_attrib(record)
 
@@ -54,8 +54,10 @@ class Exemption(XmlBase):
                 deferral_attrib
             )
 
-    def _build_xml(self):
+    async def _build_xml(self):
+        deferrals = [rd async for rd in self._create_deferral()]
+
         xml = ns.Deferrals(
-            *self._create_deferral()
+            *deferrals
         )
         return xml
