@@ -1,21 +1,21 @@
 from service.builder.base import XmlBase
-from service.builder.NS import root_ns, ns
-from service.database.sql import (donors_card_fias_stmt, address_stmt,
-                                  blood_param_stmt, notes_stmt)
+from service.builder.base.NS import ns
+from service.database.sql import (donors_card_stmt, address_stmt,
+                                  blood_param_stmt)
 from service.database.utils import get_records, get_record
 
 
-class DonorsCardFias(XmlBase):
+class DonorsCard(XmlBase):
     """
-    Карта донора ФИАС
+    Карта донора
     """
     def __init__(self):
         self.person_card_records = None
         self.address_records = None
-        super().__init__(file_name="donors_card_fias.xml", xml_name="Карта донора ФИАС")
+        super().__init__(xml_name="Карта донора")
 
     def load_data(self):
-        records = get_records(donors_card_fias_stmt)
+        records = get_records(donors_card_stmt)
         self.person_card_records = records
 
     @staticmethod
@@ -27,10 +27,8 @@ class DonorsCardFias(XmlBase):
             "FirstName": record.FirstName,
             "MiddleName": record.MiddleName,
             "BirthDate": record.BirthDate,
-            "BirthDateIsUndef": record.BirthDateIsUndef,
             "PhoneMob": record.PhoneMob,
             "JobInfo": record.JobInfo,
-            "Snils": record.Snils,
             "CreateDate": record.CreateDate,
             "CreateUserId": record.CreateUserId,
             "IsMessageAgree": record.IsMessageAgree,
@@ -53,22 +51,12 @@ class DonorsCardFias(XmlBase):
     def _create_person_cards(self):
         for record in self.person_card_records:
             person_card_attrib = self._create_person_card_attrib(record)
-            # находим адрес и параметры крови для конрктеного пациента
             address_record = get_record(address_stmt % record.UnId)
             blood_record = get_record(blood_param_stmt % record.UnId)
 
             yield ns.PersonCard(
                 ns.Gender(
                     record.Gender
-                ),
-                ns.RegAddressIsInactive(
-                    address_record.RegAddressIsInactive
-                ),
-                ns.FactAddressIsInactive(
-                    address_record.FactAddressIsInactive
-                ),
-                ns.TempAddressIsInactive(
-                    address_record.TempAddressIsInactive
                 ),
                 ns.RegAddress(
                     ns.FiasRegionId(address_record.RegFiasRegionId),
@@ -86,7 +74,6 @@ class DonorsCardFias(XmlBase):
                     Id=address_record.FactId, House=address_record.FactHouse,
                     Flat=address_record.FactFlat, PlaneAddress=address_record.FactPlaneAddress
                 ),
-                ns.MedicalCertsInfo('хз'),
                 ns.BloodGroup(
                     blood_record.BloodGroup
                 ),
@@ -95,12 +82,9 @@ class DonorsCardFias(XmlBase):
                 ),
                 ns.Kell(
                     blood_record.Kell
-                ),
+                ) if blood_record.Kell else {},
                 ns.Phenotype(
                     blood_record.Phenotype
-                ),
-                ns.RbcAntibody(
-                    blood_record.RbcAntibody
                 ),
                 ns.LastModifiedDate(
                     record.LastModifiedDate
@@ -108,34 +92,16 @@ class DonorsCardFias(XmlBase):
                 ns.LastModifiedUserId(
                     record.CreateUserId
                 ),
-                ns.IsActive(
-                    record.IsActive
-                ),
-                ns.IsAgree(
-                    record.IsAgree
-                ),
                 ns.IdentityDoc(
                     ns.IssueDate(record.IssueDate),
-                    DocType=record.DocType, Serie=record.Serie,
-                    Number=record.Number
+                    Number=record.Number, Serie=record.Serie,
+                    DocType=record.DocType, IssuedBy=record.IssuedBy,
                 ),
-                *self._create_notes_component(record)
-                if record.note_id != '-' else {},
                 person_card_attrib
             )
 
     def _build_xml(self):
-        xml = root_ns.NodeToServerPackage(
-            ns.NodeId('631000'),
-            ns.RequestId('008c2fa8-63e9-469b-9d8c-7b27a4c8aaad'),
-            ns.Users(),
-            ns.Employees(),
-            ns.Depts(),
-            ns.Teams(),
-            ns.Sessions(),
-            ns.Positions(),
-            ns.PersonCards(
-                *self._create_person_cards()
-            )
+        xml = ns.PersonCards(
+            *self._create_person_cards()
         )
         return xml

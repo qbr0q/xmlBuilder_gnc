@@ -1,0 +1,1359 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://microsoft.com/wsdl/types/"
+             schemaLocation="service/builder/validation/Fmba.Aist.SyncDataContract_guid.xsd" />
+  <xs:element name="ServerToNodePackage" nillable="true" type="ServerToNodePackage" />
+  <xs:complexType name="ServerToNodePackage">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="RequestId">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Users" type="ArrayOfUser" />
+      <xs:element minOccurs="0" maxOccurs="1" name="PersonCards" type="ArrayOfPersonCard" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MergeLogs" type="ArrayOfMergeLog" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Donations" type="ArrayOfDonation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Diseases" type="ArrayOfDisease" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Deferrals" type="ArrayOfDeferral" />
+      <xs:element minOccurs="0" maxOccurs="1" name="HemExams" type="ArrayOfHemExam" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MedExams" type="ArrayOfMedExam" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Honorables" type="ArrayOfHonorable" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfUser">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="User" nillable="true" type="User" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="User">
+    <xs:attribute name="UnId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="OrgId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Login" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1" />
+          <xs:maxLength value="50" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Password">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="100" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Email">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="50" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="IsBlocked" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPersonCard">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PersonCard" nillable="true" type="PersonCard" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PersonCard">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Gender" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:pattern value="1|2" /><!-- 1: male | 2: female -->
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="BirthPlace">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="200" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="RegAddressIsInactive" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FactAddressIsInactive" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FactAddressSinceDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TempAddressIsInactive" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TempAddressSinceDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RegAddress" type="Address" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FactAddress" type="Address" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TempAddress" type="Address" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MedicalCertsInfo" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="500" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="BloodGroup" nillable="true" >
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:pattern value="1|2|3|4" /><!-- 1: O(I) | 2: A(II) | 3: B(III) | 4: AB(IV) -->
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="GrA">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="5" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="GrB">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="5" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Rh" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:pattern value="1|-1" /><!-- 1: '+' | -1: '-' -->
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Kell" nillable="true" >
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:pattern value="1|-1" /><!-- 1: '+' | -1: '-' -->
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Chellano" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:pattern value="1|-1" /><!-- 1: '+' | -1: '-' -->
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Phenotype" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RbcAntibody" nillable="true" >
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:pattern value="0|11|12|13|21|22|23" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="DeathDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedUserId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="IsActive" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="IsAgree" nillable="true" type="xs:boolean" />
+      <!--
+      <xs:element minOccurs="0" maxOccurs="1" name="FederalKey" nillable="true" type="xs:long" />
+      <xs:element minOccurs="0" maxOccurs="1" name="SourceRegNodeId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="SourceDonorId" nillable="true" type="xs:long" />
+      -->
+      <xs:element minOccurs="0" maxOccurs="1" name="IdentityDoc" type="IdentityDoc" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Photo" type="Attachment" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Notes" type="MedicalNote" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Hla" type="Hla" />
+    </xs:sequence>
+    <xs:attribute name="UnId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="OrgId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minInclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="LastName" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1" />
+          <xs:maxLength value="30" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="FirstName" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1" />
+          <xs:maxLength value="30" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="MiddleName" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="0" />
+          <xs:maxLength value="30" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="BirthDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="BirthDateIsUndef" type="xs:boolean" />
+    <xs:attribute name="Phone">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="40" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="PhoneMob">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="10" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Email">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="50" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="JobInfo">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="60" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="JobPosition">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="20" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Snils" >
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="11" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateUserId" type="xs:int" use="required" />
+    <xs:attribute name="DonorBarcode">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="12" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="IsMessageAgree" type="xs:boolean" />
+    <xs:attribute name="IsDeleted" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="Address">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasRegionId" nillable="true" xmlns:q1="http://microsoft.com/wsdl/types/" type="q1:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasRegion">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasAreaId" nillable="true" xmlns:q2="http://microsoft.com/wsdl/types/" type="q2:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasArea">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasCityId" nillable="true" xmlns:q3="http://microsoft.com/wsdl/types/" type="q3:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasCity">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasInnerAreaId" nillable="true" xmlns:q4="http://microsoft.com/wsdl/types/" type="q4:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasInnerArea">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasSettlementId" nillable="true" xmlns:q5="http://microsoft.com/wsdl/types/" type="q5:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasSettlement">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasStreetId" nillable="true" xmlns:q6="http://microsoft.com/wsdl/types/" type="q6:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasStreet">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasTerritoryId" nillable="true" xmlns:q7="http://microsoft.com/wsdl/types/" type="q7:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasTerritory">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasSubTerritoryId" nillable="true" xmlns:q8="http://microsoft.com/wsdl/types/" type="q8:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasSubTerritory">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+    <xs:attribute name="Id" type="xs:long" />
+    <xs:attribute name="KladrCode">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="15" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="House">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="10" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Building">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="4" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Struct">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="3" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Flat">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="10" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="PostalCode">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="10" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="PlaneAddress" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="IdentityDoc">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="IssueDate" nillable="true" type="xs:dateTime" />
+    </xs:sequence>
+    <xs:attribute name="DocType" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:pattern value="1|2|3|4|5|6" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Serie">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="10" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Number">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="10" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="IssuedBy">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="150" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="Attachment">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="Id" type="xs:long" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Content" type="xs:string" />
+    </xs:sequence>
+    <xs:attribute name="Name">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="256" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="ContentType">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="256" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="UserId" type="xs:int" use="required" />
+  </xs:complexType>
+  <xs:complexType name="MedicalNote">
+    <xs:all>
+      <xs:element minOccurs="1" maxOccurs="1" name="Text" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedUserId" nillable="true" type="xs:int" />
+    </xs:all>
+    <xs:attribute name="DonorId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="NoteType" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minInclusive value="0" />
+          <xs:maxInclusive value="8" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="UserId" type="xs:int" use="required" />
+    <xs:attribute name="IsFixed" type="xs:boolean" use="required" />
+    <xs:attribute name="AssignedTo" type="xs:int" use="required" />
+    <xs:attribute name="IsDeleted" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="Hla">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedUserId" nillable="true" type="xs:int" />
+    </xs:sequence>
+    <xs:attribute name="Id" xmlns:q9="http://microsoft.com/wsdl/types/" type="q9:guid" use="required" />
+    <xs:attribute name="DonorId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="HlaTypeId" type="xs:int" use="required" />
+    <xs:attribute name="Val" type="xs:string" />
+    <xs:attribute name="Order" type="xs:int" use="required" />
+    <xs:attribute name="IsDeleted" type="xs:boolean" use="required" />
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateUserId" type="xs:int" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfMergeLog">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MergeLog" nillable="true" type="MergeLog" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MergeLog">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="MergeComments" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="RevokeDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RevokeComments" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="RevokedOrgId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="RevokedUserId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Changes" type="ArrayOfMergeLogChange" />
+    </xs:all>
+    <xs:attribute name="UnId" type="xs:long" use="required" />
+    <xs:attribute name="OrgId" type="xs:int" use="required" />
+    <xs:attribute name="MasterId" type="xs:long" use="required" />
+    <xs:attribute name="AssociateId" type="xs:long" use="required" />
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateUserId" type="xs:int" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfMergeLogChange">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MergeLogChange" nillable="true" type="MergeLogChange" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MergeLogChange">
+    <xs:attribute name="UnId" type="xs:long" use="required" />
+    <xs:attribute name="MergeLogId" type="xs:long" use="required" />
+    <xs:attribute name="EntityName" type="xs:string" />
+    <xs:attribute name="EntityId" type="xs:long" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfDonation">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Donation" nillable="true" type="Donation" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Donation">
+    <xs:sequence>
+      <!--
+      <xs:element minOccurs="0" maxOccurs="1" name="ComplicationTypeId" nillable="true" type="xs:int" />
+      -->
+      <xs:element minOccurs="0" maxOccurs="1" name="Volume" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DataInputMethod" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minInclusive value="0" />
+            <xs:maxInclusive value="3" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="PublicationDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="MobileTeamSessionId" nillable="true" type="xs:long" />
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedUserId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ConsVol" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ConsBloodVol" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="PrimaryPlasmaVol" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="AppTests" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Result" type="DonationTestResult" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Complication" type="Complication" />
+    </xs:sequence>
+    <xs:attribute name="UnId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="DonorId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="OrgId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="DepartmentId" type="xs:int" use="required" />
+    <xs:attribute name="DonationTypeId" type="xs:long" use="required" />
+    <xs:attribute name="DonationDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Barcode">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="12" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="IsDeleted" type="xs:boolean" use="required" />
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateUserId" type="xs:int" use="required" />
+    <xs:attribute name="ResultStatus" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minInclusive value="0" />
+          <xs:maxInclusive value="6" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="DonationTestResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="MinValue" nillable="true" type="xs:decimal" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MaxValue" nillable="true" type="xs:decimal" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Deviation" nillable="true" type="xs:int" />
+    </xs:sequence>
+    <xs:attribute name="DonationId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="TestTypeId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Value" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1" />
+          <xs:maxLength value="50" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="UserId" type="xs:int" use="required" />
+  </xs:complexType>
+  <xs:complexType name="Complication">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="BaseType" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Comment" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedUserId" nillable="true" type="xs:int" />
+    </xs:all>
+    <xs:attribute name="Id" xmlns:q10="http://microsoft.com/wsdl/types/" type="q10:guid" use="required" />
+    <xs:attribute name="DonationId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="OrgId" use="required" >
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minInclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Code">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="0" />
+          <xs:maxLength value="2" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Name" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1" />
+          <xs:maxLength value="50" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="ShortName" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1" />
+          <xs:maxLength value="25" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Calc" type="xs:boolean" use="required" />
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateUserId" type="xs:int" use="required" />
+    <xs:attribute name="IsDeleted" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfDisease">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Disease" nillable="true" type="Disease" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Disease">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="MKB10" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DiseaseDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DiseaseName" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RevokeDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RevokeCode" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Comment" type="xs:string" />
+    </xs:all>
+    <xs:attribute name="UnId" type="xs:long" use="required" />
+    <xs:attribute name="DonorId" type="xs:long" use="required" />
+    <xs:attribute name="OrgId" type="xs:int" use="required" />
+    <xs:attribute name="SourceId" type="xs:int" use="required" />
+    <xs:attribute name="EpidNum" type="xs:int" use="required" />
+    <xs:attribute name="CreateDate" type="xs:dateTime" use="required" />
+    <xs:attribute name="IsDeleted" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfDeferral">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Deferral" nillable="true" type="Deferral" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Deferral">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="SourceType" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="StartDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="StopDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="RevokeDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="RevokeReason" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RevokedUserId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RevokedOrgId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedDate" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:dateTime">
+            <xs:minInclusive value="1900-01-01T00:00:00" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastModifiedUserId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Comments">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ResultTestTypeId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ResultDonationId" nillable="true" type="xs:long" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DiseaseId" nillable="true" type="xs:long" />
+      <!--
+      <xs:element minOccurs="0" maxOccurs="1" name="FederalKey" nillable="true" xmlns:q11="http://microsoft.com/wsdl/types/" type="q11:guid" />
+      -->
+    </xs:all>
+    <xs:attribute name="UnId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="DonorId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="OrgId" use="required" >
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="DefType" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateUserId" type="xs:int" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfHemExam">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="HemExam" nillable="true" type="HemExam" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HemExam">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="ExamEndTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DeferralId" nillable="true" type="xs:long" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Result" type="HemTestResult" />
+    </xs:sequence>
+    <xs:attribute name="UnId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="OrgId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="DonorId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="ExamDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="HematologyResultType">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minInclusive value="0" />
+          <xs:maxInclusive value="6" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="UserId" type="xs:int" use="required" />
+    <xs:attribute name="IsDeleted" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="HemTestResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="IsNorm" nillable="true" type="xs:boolean" />
+    </xs:sequence>
+    <xs:attribute name="ExamId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="TestTypeId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minInclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Value" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1" />
+          <xs:maxLength value="50" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfMedExam">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MedExam" nillable="true" type="MedExam" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MedExam">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="DeferralId" nillable="true" type="xs:long" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Result" type="MedTestResult" />
+    </xs:sequence>
+    <xs:attribute name="UnId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="OrgId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="DonorId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="ExamDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="UserId" type="xs:int" use="required" />
+    <xs:attribute name="IsDeleted" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="MedTestResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="IsNorm" nillable="true" type="xs:boolean" />
+    </xs:sequence>
+    <xs:attribute name="ExamId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="TestTypeId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minInclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="Value" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1" />
+          <xs:maxLength value="50" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfHonorable">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Honorable" nillable="true" type="Honorable" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Honorable">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="OrderDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="CertIssueDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="CertIssueOrgId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="AwardedOrgId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="IsUssr" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="IsLost" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="IsDuplicate" nillable="true" type="xs:boolean" />
+    </xs:all>
+    <xs:attribute name="DonorId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="OrderNumber">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="0" />
+          <xs:maxLength value="50" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="CertNumber">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="0" />
+          <xs:maxLength value="50" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="UserId" type="xs:int" use="required" />
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="IsDeleted" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:element name="NodeToServerPackage" nillable="true" type="NodeToServerPackage" />
+  <xs:complexType name="NodeToServerPackage">
+    <xs:all>
+      <xs:element minOccurs="1" maxOccurs="1" name="NodeId" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="RequestId" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Users" type="ArrayOfUser" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Depts" type="ArrayOfDepartment" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Sessions" type="ArrayOfMobileSession" />
+      <xs:element minOccurs="0" maxOccurs="1" name="PersonCards" type="ArrayOfPersonCard" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Donations" type="ArrayOfDonation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Deferrals" type="ArrayOfDeferral" />
+      <xs:element minOccurs="0" maxOccurs="1" name="HemExams" type="ArrayOfHemExam" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MedExams" type="ArrayOfMedExam" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DonationProcesses" type="ArrayOfDonationProcess" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Honorables" type="ArrayOfHonorable" />
+      <!--
+      <xs:element minOccurs="0" maxOccurs="1" name="Positions" type="ArrayOfPosition" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Teams" type="ArrayOfTeam" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Employees" type="ArrayOfEmployee" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MergeLogs" type="ArrayOfMergeLog" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Diseases" type="ArrayOfDisease" />
+      -->
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfEmployee">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Employee" nillable="true" type="Employee" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Employee">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="UserId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="PositionId" nillable="true" type="xs:int" />
+    </xs:sequence>
+    <xs:attribute name="Id" type="xs:int" use="required" />
+    <xs:attribute name="FullName" type="xs:string" />
+    <xs:attribute name="Phone" type="xs:string" />
+    <xs:attribute name="Address" type="xs:string" />
+    <xs:attribute name="IsBlocked" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfDepartment">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Department" nillable="true" type="Department" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Department">
+    <xs:all>
+      <xs:element minOccurs="1" maxOccurs="1" name="Name">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1" />
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="ShortName">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1" />
+            <xs:maxLength value="20" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+    <xs:attribute name="Id" type="xs:int" use="required"/>
+    <xs:attribute name="OrgId" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="TypeId" use="required" >
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minInclusive value="0" />
+          <xs:maxInclusive value="27" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="IsActive" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfTeam">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Team" nillable="true" type="Team" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Team">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Employee" type="TeamEmployee" />
+    </xs:sequence>
+    <xs:attribute name="Id" type="xs:int" use="required" />
+    <xs:attribute name="RegDate" type="xs:dateTime" use="required" />
+    <xs:attribute name="DeptId" type="xs:int" use="required" />
+    <xs:attribute name="TeamNumber" type="xs:int" use="required" />
+    <xs:attribute name="Supplies" type="xs:string" />
+    <xs:attribute name="ModifyDate" type="xs:dateTime" use="required" />
+    <xs:attribute name="UserId" type="xs:int" use="required" />
+  </xs:complexType>
+  <xs:complexType name="TeamEmployee">
+    <xs:attribute name="Id" type="xs:int" use="required" />
+    <xs:attribute name="TeamId" type="xs:int" use="required" />
+    <xs:attribute name="EmployeeId" type="xs:int" use="required" />
+    <xs:attribute name="PositionId" type="xs:int" use="required" />
+    <xs:attribute name="CreateDate" type="xs:dateTime" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfMobileSession">
+    <xs:sequence> 
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MobileSession" nillable="true" type="MobileSession" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MobileSession">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="Destination">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="50" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="DefaultDonTypeId" nillable="true" type="xs:long" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MedicalDeferralCount" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DatabaseDeferralCount" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Address" type="MobileSessionAddress" />
+    </xs:all>
+    <xs:attribute name="Id" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:long">
+          <xs:minExclusive value="0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="DeptId" type="xs:int" use="required" />
+    <xs:attribute name="SessionDate" type="xs:dateTime" use="required" />
+    <xs:attribute name="CreateDate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime">
+          <xs:minInclusive value="1900-01-01T00:00:00" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="UserId" type="xs:int" use="required" />
+    <xs:attribute name="IsDeleted" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="MobileSessionAddress">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="KladrCode">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="15" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasRegionId" nillable="true" xmlns:q12="http://microsoft.com/wsdl/types/" type="q12:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasRegion">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasAreaId" nillable="true" xmlns:q13="http://microsoft.com/wsdl/types/" type="q13:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasArea">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasCityId" nillable="true" xmlns:q14="http://microsoft.com/wsdl/types/" type="q14:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasCity">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasInnerAreaId" nillable="true" xmlns:q15="http://microsoft.com/wsdl/types/" type="q15:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasInnerArea">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasSettlementId" nillable="true" xmlns:q16="http://microsoft.com/wsdl/types/" type="q16:guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FiasSettlement">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPosition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Position" nillable="true" type="Position" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Position">
+    <xs:attribute name="Id" type="xs:int" use="required" />
+    <xs:attribute name="Name" type="xs:string" />
+    <xs:attribute name="IsTeamRole" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfDonationProcess">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DonationProcess" nillable="true" type="DonationProcess" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DonationProcess">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="MobileTeamSessionId" nillable="true" type="xs:long" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="History" type="DonationProcessHistory" />
+    </xs:sequence>
+    <xs:attribute name="Id" type="xs:int" use="required" />
+    <xs:attribute name="DonorId" type="xs:long" use="required" />
+    <xs:attribute name="OrderNumber" type="xs:int" use="required" />
+    <xs:attribute name="RegDate" type="xs:dateTime" use="required" />
+    <xs:attribute name="CurrentState" type="xs:int" use="required" />
+    <xs:attribute name="NeedCheckAlbumin" type="xs:boolean" use="required" />
+    <xs:attribute name="NeedCheckHbCore" type="xs:boolean" use="required" />
+    <xs:attribute name="UserId" type="xs:int" use="required" />
+  </xs:complexType>
+  <xs:complexType name="DonationProcessHistory">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="OldState" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="NewState" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Comments" type="xs:string" />
+    </xs:sequence>
+    <xs:attribute name="Id" type="xs:int" use="required" />
+    <xs:attribute name="PrcId" type="xs:int" use="required" />
+    <xs:attribute name="CreateDate" type="xs:dateTime" use="required" />
+    <xs:attribute name="UserId" type="xs:int" use="required" />
+    <xs:attribute name="NeedCheckAlbumin" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:element name="Disease" nillable="true" type="Disease" />
+  <xs:element name="Complication" nillable="true" type="Complication" />
+  <xs:element name="Hla" nillable="true" type="Hla" />
+  <xs:element name="Honorable" nillable="true" type="Honorable" />
+  <xs:element name="Attachment" nillable="true" type="Attachment" />
+  <xs:element name="MedTestResult" nillable="true" type="MedTestResult" />
+  <xs:element name="MedExam" nillable="true" type="MedExam" />
+  <xs:element name="Deferral" nillable="true" type="Deferral" />
+  <xs:element name="Department" nillable="true" type="Department" />
+  <xs:element name="Donation" nillable="true" type="Donation" />
+  <xs:element name="DonationProcess" nillable="true" type="DonationProcess" />
+  <xs:element name="DonationProcessHistory" nillable="true" type="DonationProcessHistory" />
+  <xs:element name="DonationTestResult" nillable="true" type="DonationTestResult" />
+  <xs:element name="Employee" nillable="true" type="Employee" />
+  <xs:element name="HemTestResult" nillable="true" type="HemTestResult" />
+  <xs:element name="HemExam" nillable="true" type="HemExam" />
+  <xs:element name="IdentityDoc" nillable="true" type="IdentityDoc" />
+  <xs:element name="MedicalNote" nillable="true" type="MedicalNote" />
+  <xs:element name="MergeLog" nillable="true" type="MergeLog" />
+  <xs:element name="MergeLogChange" nillable="true" type="MergeLogChange" />
+  <xs:element name="MobileSession" nillable="true" type="MobileSession" />
+  <xs:element name="MobileSessionAddress" nillable="true" type="MobileSessionAddress" />
+  <xs:element name="Address" nillable="true" type="Address" />
+  <xs:element name="TeamEmployee" nillable="true" type="TeamEmployee" />
+  <xs:element name="Team" nillable="true" type="Team" />
+  <xs:element name="User" nillable="true" type="User" />
+  <xs:element name="PersonCard" nillable="true" type="PersonCard" />
+  <xs:element name="Position" nillable="true" type="Position" />
+</xs:schema>

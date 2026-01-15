@@ -1,11 +1,9 @@
-from service.logging_config import setup_log
 from service.database import init_db
-from service.builder import XmlBuilder
+from service.builder import XmlManager
 
 
 def run_service():
-    setup_log()
     init_db()
 
-    xml_builder = XmlBuilder()
-    xml_builder.build()
+    xml_manager = XmlManager()
+    xml_manager.execute()

@@ -1,5 +1,5 @@
 from service.builder.base import XmlBase
-from service.builder.NS import root_ns, ns
+from service.builder.base.NS import ns
 from service.database.sql import donations_stmt, donations_tests_stmt
 from service.database.utils import get_records
 
@@ -11,7 +11,7 @@ class Donations(XmlBase):
     def __init__(self):
         self.app_tests = ""
         self.donations_records = None
-        super().__init__(file_name="donations.xml", xml_name="Донации")
+        super().__init__(xml_name="Донации")
 
     def load_data(self):
         records = get_records(donations_stmt)
@@ -20,17 +20,17 @@ class Donations(XmlBase):
     @staticmethod
     def _create_donation_attrib(record):
         donation_attrib = {
-            "ResultStatus": record.ResultStatus,
-            "DonationTypeId": record.DonationTypeId,
-            "DepartmentId": record.DepartmentId,
+            "UnId": record.UnId,
             "DonorId": record.UnId,
             "OrgId": record.OrgId,
+            "CreateUserId": record.CreateUserId,
             "CreateDate": record.CreateDate,
             "DonationDate": record.DonationDate,
-            "UnId": record.UnId,
-            "Barcode": record.Barcode,
             "IsDeleted": record.IsDeleted,
-            "CreateUserId": record.CreateUserId
+            "Barcode": record.Barcode,
+            "DepartmentId": record.DepartmentId,
+            "DonationTypeId": record.DonationTypeId,
+            "ResultStatus": record.ResultStatus
         }
         return donation_attrib
 
@@ -44,19 +44,24 @@ class Donations(XmlBase):
 
         for record in prelab_tests:
             yield ns.Result(
-                CreateDate=record.CreateDate, UserId=record.UserId,
-                DonationId=un_id, TestTypeId=record.TestTypeId,
+                DonationId=un_id, UserId=record.UserId,
+                CreateDate=record.CreateDate, TestTypeId=record.TestTypeId,
                 Value=record.Value
             )
 
     def _create_donation(self):
         for record in self.donations_records:
-            self.type_test_dict = ""
             donation_attrib = self._create_donation_attrib(record)
 
             yield ns.Donation(
                 ns.Volume(
                     record.Volume
+                ),
+                ns.DataInputMethod(
+                    record.DataInputMethod
+                ),
+                ns.LastModifiedDate(
+                    record.LastModifiedDate
                 ),
                 ns.ConsVol(
                     record.ConsVol
@@ -64,27 +69,15 @@ class Donations(XmlBase):
                 ns.ConsBloodVol(
                     record.ConsBloodVol
                 ),
-                ns.LastModifiedDate(
-                    record.LastModifiedDate
-                ),
-                ns.DataInputMethod(
-                    record.DataInputMethod
-                ),
-                *self._create_results_component(record.UnId),
                 ns.AppTests(
                     self.app_tests
                 ) if self.app_tests else {},
+                *self._create_results_component(record.DonationId),
                 donation_attrib
             )
 
     def _build_xml(self):
-        xml = root_ns.NodeToServerPackage(
-            ns.NodeId('631000'),
-            ns.RequestId('008c2fa8-63e9-469b-9d8c-7b27a4c8aaad'),
-            ns.Depts(),
-            ns.Sessions(),
-            ns.Donations(
-                *self._create_donation()
-            )
+        xml = ns.Donations(
+            *self._create_donation()
         )
         return xml
