@@ -1,5 +1,5 @@
 from service.builder.base import XmlBase
-from service.builder.NS import root_ns, ns
+from service.builder.base.NS import ns
 from service.database.sql import exemption_stmt
 from service.database.utils import get_records
 
@@ -10,7 +10,7 @@ class Exemption(XmlBase):
     """
     def __init__(self):
         self.exemption_records = None
-        super().__init__(file_name="exemption.xml", xml_name="Отводы")
+        super().__init__(xml_name="Отводы")
 
     def load_data(self):
         records = get_records(exemption_stmt)
@@ -42,13 +42,6 @@ class Exemption(XmlBase):
                 ns.RevokeDate(
                     record.RevokeDate
                 ),
-                ns.RevokeReason(),
-                ns.RevokedUserId(
-                    record.RevokedUserId
-                ),
-                ns.RevokedOrgId(
-                    record.RevokedOrgId
-                ),
                 ns.LastModifiedDate(
                     record.LastModifiedDate
                 ),
@@ -62,11 +55,7 @@ class Exemption(XmlBase):
             )
 
     def _build_xml(self):
-        xml = root_ns.NodeToServerPackage(
-            ns.NodeId('631000'),
-            ns.RequestId('008c2fa8-63e9-469b-9d8c-7b27a4c8aaad'),
-            ns.Deferrals(
-                *self._create_deferral()
-            )
+        xml = ns.Deferrals(
+            *self._create_deferral()
         )
         return xml

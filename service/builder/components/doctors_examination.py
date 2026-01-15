@@ -1,5 +1,5 @@
 from service.builder.base import XmlBase
-from service.builder.NS import root_ns, ns, xsi_type
+from service.builder.base.NS import ns, xsi_type
 from service.database.sql import docs_stmt, docs_tests_stmt
 from service.database.utils import get_records
 
@@ -10,7 +10,7 @@ class DocsExam(XmlBase):
     """
     def __init__(self):
         self.visits_records = None
-        super().__init__(file_name="doctors_examination.xml", xml_name="Врачебный осмотр")
+        super().__init__(xml_name="Врачебный осмотр")
 
     def load_data(self):
         records = get_records(docs_stmt)
@@ -52,11 +52,7 @@ class DocsExam(XmlBase):
             )
 
     def _build_xml(self):
-        xml = root_ns.NodeToServerPackage(
-            ns.NodeId('631000'),
-            ns.RequestId('008c2fa8-63e9-469b-9d8c-7b27a4c8aaad'),
-            ns.MedExams(
-                *self._create_med_exams()
-            )
+        xml = ns.MedExams(
+            *self._create_med_exams()
         )
         return xml

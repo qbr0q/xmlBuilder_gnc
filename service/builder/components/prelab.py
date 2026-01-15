@@ -1,5 +1,5 @@
 from service.builder.base import XmlBase
-from service.builder.NS import root_ns, ns, xsi_type
+from service.builder.base.NS import ns, xsi_type
 from service.database.sql import prelab_stmt, prelab_tests_stmt
 from service.database.utils import get_records
 
@@ -10,7 +10,7 @@ class PreLab(XmlBase):
     """
     def __init__(self):
         self.prelab_records = None
-        super().__init__(file_name="prelab.xml", xml_name="Предлаб")
+        super().__init__(xml_name="Предлаб")
 
     def load_data(self):
         records = get_records(prelab_stmt)
@@ -19,14 +19,14 @@ class PreLab(XmlBase):
     @staticmethod
     def _create_prelab_attrib(record):
         prelab_attrib = {
-            "HematologyResultType": record.HematologyResultType,
-            "OrgId": record.OrgId,
+            "UnId": record.UnId,
             "DonorId": record.DonorId,
-            "IsDeleted": record.IsDeleted,
+            "OrgId": record.OrgId,
+            "UserId": record.UserId,
             "CreateDate": record.CreateDate,
             "ExamDate": record.ExamDate,
-            "UnId": record.UnId,
-            "UserId": record.UserId
+            "IsDeleted": record.IsDeleted,
+            "HematologyResultType": record.HematologyResultType,
         }
         return prelab_attrib
 
@@ -36,6 +36,7 @@ class PreLab(XmlBase):
 
         for record in prelab_tests:
             yield ns.Result(
+                ns.IsNorm(record.IsNorm),
                 ExamId=un_id, TestTypeId=record.TestTypeId,
                 Value=record.Value
             )
@@ -56,12 +57,7 @@ class PreLab(XmlBase):
             )
 
     def _build_xml(self):
-        xml = root_ns.NodeToServerPackage(
-            ns.NodeId('631000'),
-            ns.RequestId('008c2fa8-63e9-469b-9d8c-7b27a4c8aaad'),
-            ns.Users(),
-            ns.HemExams(
-                *self._create_hem_exams()
-            )
+        xml = ns.HemExams(
+            *self._create_hem_exams()
         )
         return xml

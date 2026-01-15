@@ -1,82 +1,43 @@
+from settings import org_id
+
+
 ##########################################
 # карта донора
 ##########################################
 
 donors_card_stmt = """
-SELECT DISTINCT ON (d.id) 
+SELECT DISTINCT ON (d.id)
     d.id                                       AS "UnId",
     d.lastname                                 AS "LastName",
     d.firstname                                AS "FirstName",
     d.patrname                                 AS "MiddleName",
-    to_char(d.birthday,
-            'dd.mm.yyyy 00:00:00')             AS "BirthDate",
+    d.birthday                                 AS "BirthDate",
     d.sex                                      AS "Gender",
     d.deleted                                  AS "IsDeleted",
-    to_char(d."createDateTime",
-            'yyyy-mm-ddThh24:mi:ss.US')        AS "CreateDate",
-    to_char(d."modifyDateTime",
-            'yyyy-mm-ddThh24:mi:ss.US')        AS "LastModifiedDate",
+    d."createDateTime"                         AS "CreateDate",
+    d."modifyDateTime"                         AS "LastModifiedDate",
     d."createUserid"                           AS "CreateUserId",
     de.organisation                            AS "JobInfo",
     de.post                                    AS "JobPosition",
-    dc.contact                                 AS "PhoneMob",
-    '770500'                                   AS "OrgId",
-    'true'                                     AS "IsMessageAgree",
+    substring(regexp_replace(dc.contact,
+    '[^0-9]', '', 'g') from '([0-9]{10})$')    AS "PhoneMob",
+    %s                                         AS "OrgId",
+    true                                       AS "IsMessageAgree",
     CONCAT_WS(', ', da.locality, da.street,
               da.house, da.flat)               AS "PlaneAddress",
     dd.type                                    AS "DocType",
     dd.Number                                  AS "Number",
-    dd.serial                                  AS "Serie"
+    dd.serial                                  AS "Serie",
+    dd."startDate"                             AS "IssueDate",
+    dd.origin                                  AS "IssuedBy"
 FROM donor d
 INNER JOIN donor_employment de ON d.id = de.donor_id AND NOT de.deleted
-INNER JOIN donor_contact dc ON d.id = dc.donor_id AND NOT dc.deleted
+INNER JOIN donor_contact dc ON d.id = dc.donor_id AND NOT dc.deleted and dc.type = 1
 INNER JOIN donor_address da ON d.id = da.donor_id and da.type = 1 AND NOT da.deleted
 INNER JOIN donor_document dd ON d.id = dd.donor_id AND NOT dd.deleted
 WHERE DATE(d."createDateTime") >= DATE(NOW() - INTERVAL '1 DAY') AND NOT d.deleted
 ORDER BY 1 DESC;
-"""
-
-##########################################
-# карта донора (фиас)
-##########################################
-
-donors_card_fias_stmt = """
-SELECT DISTINCT ON (d.id)
-    d.id                                    AS "UnId",
-    d.lastname                              AS "LastName",
-    d.firstname                             AS "FirstName",
-    d.patrname                              AS "MiddleName",
-    to_char(d.birthday,
-        'dd.mm.yyyy 00:00:00')              AS "BirthDate",
-    (d.birthday IS NULL)                    AS "BirthDateIsUndef",
-    d.sex                                   AS "Gender",
-    d.deleted                               AS "IsDeleted",
-    d."SNILS"                               AS "Snils",
-    to_char(d."createDateTime",
-            'yyyy-mm-ddThh24:mi:ss.US')     AS "CreateDate",
-    to_char(d."modifyDateTime",
-            'yyyy-mm-ddThh24:mi:ss.US')     AS "LastModifiedDate",
-    d."createUserid"                        AS "CreateUserId",
-    de.organisation                         AS "JobInfo",
-    dc.contact                              AS "PhoneMob",
-    '770500'                                AS "OrgId",
-    'true'                                  AS "IsMessageAgree",
-    dd.type                                 AS "DocType",
-    dd.Number                               AS "Number",
-    dd.serial                               AS "Serie",
-    to_char(dd."startDate",
-            'dd.mm.yyyy 00:00:00')          AS "IssueDate",
-    'false'                                 AS "IsActive",
-    'false'                                 AS "IsAgree",
-    dn.id                                   AS note_id
-FROM donor d
-INNER JOIN donor_employment de ON d.id = de.donor_id AND NOT de.deleted
-INNER JOIN donor_contact dc ON d.id = dc.donor_id AND NOT dc.deleted
-INNER JOIN donor_document dd ON d.id = dd.donor_id AND NOT dd.deleted
-LEFT JOIN donor_note dn on d.id = dn.donor_id
-WHERE DATE(d."createDateTime") >= DATE(NOW() - INTERVAL '1 DAY') AND NOT d.deleted
-ORDER BY 1 DESC;
-"""
+""" % org_id
 
 address_stmt = """
 SELECT DISTINCT ON (d.id)
@@ -89,9 +50,11 @@ SELECT DISTINCT ON (d.id)
     reg_adr.flat                                AS "RegFlat",
     CONCAT_WS(', ', reg_adr.locality, reg_adr.street,
               reg_adr.house, reg_adr.flat)      AS "RegPlaneAddress",
-    reg_adr.locality_guid                       AS "RegFiasRegionId",
+    coalesce(reg_adr.locality_guid,
+        '0c5b2444-70a0-4932-980c-b4dc0d3f02b5') AS "RegFiasRegionId",
     reg_adr.locality                            AS "RegRegion",
-    reg_adr.street_guid                         AS "RegFiasStreetId",
+    coalesce(reg_adr.street_guid,
+        '0c5b2444-70a0-4932-980c-b4dc0d3f02b5') AS "RegFiasStreetId",
     reg_adr.street                              AS "RegStreet",
 
     fact_adr.id                                 AS "FactId",
@@ -99,9 +62,11 @@ SELECT DISTINCT ON (d.id)
     fact_adr.flat                               AS "FactFlat",
     CONCAT_WS(', ', fact_adr.locality, fact_adr.street,
               fact_adr.house, fact_adr.flat)    AS "FactPlaneAddress",
-    fact_adr.locality_guid                      AS "FactFiasRegionId",
+    COALESCE(fact_adr.locality_guid,
+        '0c5b2444-70a0-4932-980c-b4dc0d3f02b5') AS "FactFiasRegionId",
     fact_adr.locality                           AS "FactRegion",
-    fact_adr.street_guid                        AS "FactFiasStreetId",
+    COALESCE(fact_adr.street_guid,
+        '0c5b2444-70a0-4932-980c-b4dc0d3f02b5') AS "FactFiasStreetId",
     fact_adr.street                             AS "FactStreet"
 FROM donor d
 INNER JOIN donor_address reg_adr ON d.id = reg_adr.donor_id and reg_adr.type = 1
@@ -110,22 +75,6 @@ INNER JOIN donor_address fact_adr ON d.id = fact_adr.donor_id and fact_adr.type 
       AND NOT fact_adr.deleted
 WHERE d.id = %s AND NOT d.deleted
 ORDER BY 1 DESC;
-"""
-
-notes_stmt = """ 
-SELECT d.id                                  AS "DonorId",
-       1                                     AS "NoteType",
-       to_char(dn."modifyDateTime",
-               'yyyy-mm-ddThh24:mi:ss.US')   AS "CreateDate",
-       dn."createUserid"                     AS "UserId",
-       'false'                               AS "IsFixed",
-       0                                     AS "AssignedTo",
-       dn.deleted                            AS "IsDeleted",
-       dn.note                               AS "Text"
-FROM donor d
-INNER JOIN donor_note dn on d.id = dn.donor_id
-      AND NOT dn.deleted
-WHERE d.id = %s;
 """
 
 ##########################################
@@ -160,12 +109,21 @@ WITH donor_lab_history AS (SELECT v.donor_id       AS donor_id,
                                WHERE blood_type_id IS NOT NULL
                                ORDER BY priority, setDateTime DESC
                                LIMIT 1) AS actual_blood_type_id,
-                              (SELECT rhesus_id
+                              (SELECT 
+                                   case rhesus_id
+                                   when 1 then 1
+                                   when 2 then -1
+                                   else rhesus_id end
                                FROM donor_lab_history
                                WHERE rhesus_id IS NOT NULL
                                ORDER BY priority, setDateTime DESC
                                LIMIT 1) AS actual_rhesus_id,
-                              (SELECT kell_id
+                              (SELECT 
+                                   case kell_id
+                                   when 1 then 1
+                                   when 2 then 1
+                                   when 3 then -1
+                                   else kell_id end
                                FROM donor_lab_history
                                WHERE kell_id IS NOT NULL
                                ORDER BY priority, setDateTime DESC
@@ -196,9 +154,8 @@ docs_stmt = """
 SELECT DISTINCT ON (V.id)
     v.id                                        AS "UnId",
     v."createUserid"                            AS "UserId",
-    to_char(v."createDateTime",
-            'yyyy-mm-ddThh24:mi:ss.US')         AS "CreateDate",
-    '770500'                                    AS "OrgId",
+    v."createDateTime"                          AS "CreateDate",
+    %s                                          AS "OrgId",
     donor_id                                    AS "DonorId",
     v."setDate"                                 AS "ExamDate",
     v.deleted                                   AS "IsDeleted",
@@ -206,18 +163,18 @@ SELECT DISTINCT ON (V.id)
 FROM visit v
 WHERE DATE(v."setDate") >= DATE(NOW() - INTERVAL '1 DAY')
 AND NOT v.deleted;
-"""
+""" % org_id
 
 docs_tests_stmt = """
 SELECT
     ipt.aist_id                                  AS "TestTypeId",
     ip.value                                     AS "Value",
-    CASE d.sex
-        WHEN 1 THEN REPLACE(ip.value, ',', '.')::float between ipt.min::float and ipt.max::float
-            OR REPLACE(ip.value, ',', '.')::float between ipt.min_norm_male::float and ipt.max_norm_male::float
-        WHEN 2 THEN REPLACE(ip.value, ',', '.')::float between ipt.min::float and ipt.max::float
-            OR REPLACE(ip.value, ',', '.')::float between ipt.min_norm_female::float and ipt.max_norm_female::float
-        END                                      AS "IsNorm"
+    COALESCE(CASE d.sex
+        WHEN 1 THEN REPLACE(ip.value, ',', '.')::float between
+            coalesce(ipt.min_norm_male::float, 0) and coalesce(ipt.max_norm_male::float, 9999)
+        WHEN 2 THEN REPLACE(ip.value, ',', '.')::float between
+            coalesce(ipt.min_norm_female::float, 0) and coalesce(ipt.max_norm_female::float, 9999)
+        END, false)                              AS "IsNorm"
 FROM visit v
 INNER JOIN inspect_prop ip ON v.id = ip.visit_id AND NOT ip.deleted
 INNER JOIN inspect_prop_type ipt ON ip.type_id = ipt.id
@@ -233,11 +190,10 @@ WHERE v.id = %s AND NOT v.deleted;
 prelab_stmt = """
 SELECT
     lab.status_id                         AS "HematologyResultType",
-    '770500'                              AS "OrgId",
+    %s                                    AS "OrgId",
     v.donor_id                            AS "DonorId",
     lab.deleted                           AS "IsDeleted",
-    to_char(lab."createDateTime",
-            'yyyy-mm-ddThh24:mi:ss.US')   AS "CreateDate",
+    lab."createDateTime"                  AS "CreateDate",
     lab."setDate"                         AS "ExamDate",
     lab.id                                AS "UnId",
     lab."createUserid"                    AS "UserId",
@@ -247,16 +203,25 @@ FROM lab
 INNER JOIN visit v ON lab.visit_id = v.id AND NOT v.deleted
 WHERE DATE(lab."setDate") >= DATE(NOW() - INTERVAL '1 DAY')
 AND NOT lab.deleted;
-"""
+""" % org_id
 
 prelab_tests_stmt = """
 SELECT
     lpt.aist_id         AS "TestTypeId",
-    lp.value            AS "Value"
-FROM lab_prop lp
-INNER JOIN lab_prop_type lpt ON lp.type_id = lpt.id
-      AND lpt.aist_id IS NOT NULL AND NOT lpt.deleted
-WHERE lab_id = %s AND NOT lp.deleted;
+    lp.value            AS "Value",
+    COALESCE(CASE d.sex
+        WHEN 1 THEN REPLACE(lp.value, ',', '.')::float between
+            coalesce(lpt.min_norm_male::float, 0) and coalesce(lpt.max_norm_male::float, 9999)
+        WHEN 2 THEN REPLACE(lp.value, ',', '.')::float between
+            coalesce(lpt.min_norm_female::float, 0) and coalesce(lpt.max_norm_female::float, 9999)
+    END, false)        AS "IsNorm"
+FROM lab l
+    INNER JOIN lab_prop lp on l.id = lp.lab_id
+    INNER JOIN lab_prop_type lpt ON lp.type_id = lpt.id
+        AND lpt.aist_id IS NOT NULL AND NOT lpt.deleted
+    INNER JOIN visit v on l.visit_id = v.id
+    INNER JOIN donor d on v.donor_id = d.id
+WHERE l.id = %s AND NOT lp.deleted;
 """
 
 ##########################################
@@ -264,23 +229,23 @@ WHERE lab_id = %s AND NOT lp.deleted;
 ##########################################
 
 donations_stmt = """
-SELECT lab.donation_id,
-       lab.status_id                                            AS "ResultStatus",
-       dn.type_id                                               AS "DonationTypeId",
-       '100000012'                                              AS "DepartmentId",
-       v.donor_id                                               AS "UnId",
-       '770500'                                                 AS "OrgId",
-       to_char(lab."createDateTime",
-               'yyyy-mm-ddThh24:mi:ss.US')                      AS "CreateDate",
-       dn."setDate"                                             AS "DonationDate",
-       substring(concat(lab.prefix, lab.number, lab.suffix), 4) AS "Barcode",
-       lab.deleted                                              AS "IsDeleted",
-       lab."createUserid"                                       AS "CreateUserId",
-       p.volume                                                 AS "Volume",
-       anticoagulant.value                                      AS "ConsVol",
-       component_excluding_anticoag.value                       AS "ConsBloodVol",
-       to_char(dn."modifyDateTime",
-               'yyyy-mm-ddThh24:mi:ss.US')                      AS "LastModifiedDate"
+SELECT DISTINCT ON (lab.id)
+       lab.status_id                                              AS "ResultStatus",
+       dn.type_id                                                 AS "DonationTypeId",
+       '100000012'                                                AS "DepartmentId",
+       v.donor_id                                                 AS "UnId",
+       %s                                                         AS "OrgId",
+       lab."createDateTime"                                       AS "CreateDate",
+       dn."setDate"                                               AS "DonationDate",
+       left(concat(lab.prefix, lab.number, lab.suffix), 12)       AS "Barcode",
+       lab.deleted                                                AS "IsDeleted",
+       lab."createUserid"                                         AS "CreateUserId",
+       p.volume                                                   AS "Volume",
+       cast(anticoagulant.value AS INT)                           AS "ConsVol",
+       cast(component_excluding_anticoag.value AS INT)            AS "ConsBloodVol",
+       dn."modifyDateTime"                                        AS "LastModifiedDate",
+       1                                                          AS "DataInputMethod",
+       lab.donation_id                                            AS "DonationId"
 FROM lab
          JOIN donation dn on lab.donation_id = dn.id
          JOIN visit v ON dn.visit_id = v.id
@@ -300,12 +265,11 @@ FROM lab
                             FROM package_prop_type
                             WHERE code = 'prepared_component_excluding_anticoag' AND p.tissue_type_id = tissue_type_id)
 WHERE DATE(lab."setDate") >= DATE(NOW() - INTERVAL '1 DAY');
-"""
+""" % org_id
 
 donations_tests_stmt = """
 SELECT
-    to_char(lp."createDateTime",
-            'yyyy-mm-ddThh24:mi:ss.US')     AS "CreateDate",
+    lp."createDateTime"                     AS "CreateDate",
     lab."createUserid"                      AS "UserId",
     lpt.aist_id                             AS "TestTypeId",
     lp.value                                AS "Value"
@@ -324,17 +288,17 @@ exemption_stmt = """
 SELECT
     db.id                                   AS "UnId",
     db.donor_id                             AS "DonorId",
-    '770500'                                AS "OrgId",
+    %s                                      AS "OrgId",
     db.reason                               AS "DefType",
-    to_char(db."createDateTime",
-            'yyyy-mm-ddThh24:mi:ss.US')     AS "CreateDate",
+    db."createDateTime"                     AS "CreateDate",
     db."createUserid"                       AS "CreateUserId",
     db."startDate"                          AS "StartDate",
     db."endDate"                            AS "StopDate",
     db."raiseDate"                          AS "RevokeDate",
-    db."modifyDateTime"                     AS "LastModifiedDate"
+    db."modifyDateTime"                     AS "LastModifiedDate",
+    db."createUserid"                       AS "LastModifiedUserId"
 FROM donor d
 INNER JOIN donor_ban db ON d.id = db.donor_id AND NOT db.deleted
 WHERE DATE(d."createDateTime") >= DATE(NOW() - INTERVAL '1 DAY')
 AND NOT d.deleted;
-"""
+""" % org_id

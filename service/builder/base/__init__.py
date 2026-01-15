@@ -1,1 +1,2 @@
-from .xml_base import XmlBase
+from .xml_base import (XmlBase, XmlSaver, XmlBuilder,
+                       XmlValidate, XmlLogger)
