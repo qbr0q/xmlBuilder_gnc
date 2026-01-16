@@ -1,5 +1,6 @@
 from service.builder.base import XmlBase
 from service.builder.base.NS import ns
+from service.builder.base.utils import fetch_batch_data
 from service.database.sql import (donors_card_stmt, address_stmt,
                                   blood_param_stmt)
 from service.database.utils import get_records, get_record
@@ -11,12 +12,16 @@ class DonorsCard(XmlBase):
     """
     def __init__(self):
         self.person_card_records = None
-        self.address_records = None
+        self.address_data = {}
+        self.blood_data = {}
         super().__init__(xml_name="Карта донора")
 
     async def load_data(self):
         records = await get_records(donors_card_stmt)
         self.person_card_records = records
+
+        self.address_data = await fetch_batch_data(records, address_stmt, 'UnId', get_record)
+        self.blood_data = await fetch_batch_data(records, blood_param_stmt, 'UnId', get_record)
 
     @staticmethod
     def _create_person_card_attrib(record):
@@ -36,23 +41,11 @@ class DonorsCard(XmlBase):
         }
         return parson_card_attrib
 
-    @staticmethod
-    def _create_notes_component(record):
-        notes_records = get_records(notes_stmt % record.UnId)
-        for note_record in notes_records:
-            yield ns.Notes(
-                ns.Text(note_record.Text),
-                DonorId=note_record.DonorId, NoteType=note_record.NoteType,
-                CreateDate=note_record.CreateDate, UserId=note_record.UserId,
-                IsFixed=note_record.IsFixed, AssignedTo=note_record.AssignedTo,
-                IsDeleted=note_record.IsDeleted
-            )
-
     async def _create_person_cards(self):
         for record in self.person_card_records:
             person_card_attrib = self._create_person_card_attrib(record)
-            address_record = await get_record(address_stmt % record.UnId)
-            blood_record = await get_record(blood_param_stmt % record.UnId)
+            address_record = self.address_data.get(record.UnId)
+            blood_record = self.blood_data.get(record.UnId)
 
             yield ns.PersonCard(
                 ns.Gender(

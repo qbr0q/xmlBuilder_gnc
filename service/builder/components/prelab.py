@@ -1,5 +1,6 @@
 from service.builder.base import XmlBase
 from service.builder.base.NS import ns, xsi_type
+from service.builder.base.utils import fetch_batch_data
 from service.database.sql import prelab_stmt, prelab_tests_stmt
 from service.database.utils import get_records
 
@@ -10,11 +11,14 @@ class PreLab(XmlBase):
     """
     def __init__(self):
         self.prelab_records = None
+        self.prelab_tests = {}
         super().__init__(xml_name="Предлаб")
 
     async def load_data(self):
         records = await get_records(prelab_stmt)
         self.prelab_records = records
+
+        self.prelab_tests = await fetch_batch_data(records, prelab_tests_stmt, 'UnId', get_records)
 
     @staticmethod
     def _create_prelab_attrib(record):
@@ -30,9 +34,8 @@ class PreLab(XmlBase):
         }
         return prelab_attrib
 
-    @staticmethod
-    async def _create_results_component(un_id):
-        prelab_tests = await get_records(prelab_tests_stmt % un_id)
+    async def _create_results_component(self, un_id):
+        prelab_tests = self.prelab_tests.get(un_id)
 
         for record in prelab_tests:
             yield ns.Result(
@@ -44,7 +47,7 @@ class PreLab(XmlBase):
     async def _create_hem_exams(self):
         for record in self.prelab_records:
             prelab_attrib = self._create_prelab_attrib(record)
-            resulct_component = [rc async for rc in self._create_results_component(record.UnId)]
+            result_component = [rc async for rc in self._create_results_component(record.UnId)]
 
             yield ns.HemExam(
                 ns.ExamEndTime(
@@ -53,7 +56,7 @@ class PreLab(XmlBase):
                 ns.DeferralId(
                     {xsi_type: "true"}
                 ),
-                *resulct_component,
+                *result_component,
                 prelab_attrib
             )
 
