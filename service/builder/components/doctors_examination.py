@@ -1,5 +1,6 @@
 from service.builder.base import XmlBase
 from service.builder.base.NS import ns, xsi_type
+from service.builder.base.utils import fetch_batch_data
 from service.database.sql import docs_stmt, docs_tests_stmt
 from service.database.utils import get_records
 
@@ -10,11 +11,14 @@ class DocsExam(XmlBase):
     """
     def __init__(self):
         self.visits_records = None
+        self.doc_tests = {}
         super().__init__(xml_name="Врачебный осмотр")
 
     async def load_data(self):
         records = await get_records(docs_stmt)
         self.visits_records = records
+
+        self.doc_tests = await fetch_batch_data(records, docs_tests_stmt, 'UnId', get_records)
 
     @staticmethod
     def _create_med_exam_attrib(record):
@@ -29,11 +33,10 @@ class DocsExam(XmlBase):
         }
         return med_exam_attrib
 
-    @staticmethod
-    async def _create_results_component(un_id):
-        docs_tests = await get_records(docs_tests_stmt % un_id)
+    async def _create_results_component(self, un_id):
+        doc_tests = self.doc_tests.get(un_id)
 
-        for record in docs_tests:
+        for record in doc_tests:
             yield ns.Result(
                 ns.IsNorm(record.IsNorm) if record.IsNorm != '-' else {},
                 ExamId=un_id, TestTypeId=record.TestTypeId,
